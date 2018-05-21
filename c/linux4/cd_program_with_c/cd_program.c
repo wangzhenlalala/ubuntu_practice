@@ -41,21 +41,21 @@ void remove_cd(void);
 void update_cd(void);
 
 char *main_menu[] = {
-	"add new CD",
-	"Find CD",
-	"count CDs and tracks in the catalog",
-	"quit",
+	"aadd new CD",
+	"ffind CD",
+	"ccount CDs and tracks in the catalog",
+	"qquit",
 	0,// setting a pointer to 0 means setting it to NULL;
 };
 
 char *extended_menu[] = {
-	"add new CD",
-	"find cd",
-	"count CDs and tracks in the catalog",
-	"list tracks on current CD",
-	"remove current CD",
-	"update track information",
-	"quit",
+	"aadd new CD",
+	"ffind cd",
+	"ccount CDs and tracks in the catalog",
+	"llist tracks on current CD",
+	"rremove current CD",
+	"uupdate track information",
+	"qquit",
 	0
 };
 
@@ -156,9 +156,8 @@ void draw_menu(char *options[], int current_hightlight,int start_row, int start_
 			attron(A_STANDOUT);
 		}
 		txt_ptr = options[current_row];
-		mvaddch(start_row + current_row,start_col,toupper(txt_ptr[0]));
 		txt_ptr++;
-		mvprintw(start_row + current_row,start_col+1,"%s",txt_ptr);
+		mvprintw(start_row + current_row,start_col,"%s",txt_ptr);
 		if(current_row == current_hightlight){
 			attroff(A_STANDOUT);
 		}
@@ -322,7 +321,7 @@ void update_cd(){
 	touchwin(stdscr);
 
 	do{
-		mvprintw(sub_window_ptr, screen_line++, BOX_ROW_POS + 2, "Track %d: ",track);
+		mvWprintw(sub_window_ptr, screen_line++, BOX_ROW_POS + 2, "Track %d: ",track);
 		clrtoeol();
 		refresh();
 		wgetnstr(sub_window_ptr, track_name, MAX_STRING);

@@ -347,10 +347,10 @@ void insert_title(char *cdtitle)
 {
     FILE *fp = fopen(title_file, "a");
     if (!fp) {
-	mvprintw(ERROR_LINE, 0, "cannot open CD titles database");
+	    mvprintw(ERROR_LINE, 0, "cannot open CD titles database");
     } else {
-	fprintf(fp, "%s\n", cdtitle);
-	fclose(fp);
+	    fprintf(fp, "%s\n", cdtitle);
+	    fclose(fp);
     }
 }
 
@@ -368,7 +368,7 @@ void get_string(char *string)
     wgetnstr(stdscr, string, MAX_STRING);
     len = strlen(string);
     if (len > 0 && string[len - 1] == '\n')
-	string[len - 1] = '\0';
+	    string[len - 1] = '\0';
 }
 
 /*
@@ -433,15 +433,15 @@ void count_cds()
 
     titles_fp = fopen(title_file, "r");
     if (titles_fp) {
-	while (fgets(entry, MAX_ENTRY, titles_fp))
-	    titles++;
-	fclose(titles_fp);
+        while (fgets(entry, MAX_ENTRY, titles_fp))
+            titles++;
+        fclose(titles_fp);
     }
     tracks_fp = fopen(tracks_file, "r");
     if (tracks_fp) {
-	while (fgets(entry, MAX_ENTRY, tracks_fp))
-	    tracks++;
-	fclose(tracks_fp);
+        while (fgets(entry, MAX_ENTRY, tracks_fp))
+            tracks++;
+        fclose(tracks_fp);
     }
     mvprintw(ERROR_LINE, 0, "Database contains %d titles, with a total of %d tracks.", titles, tracks);
     get_return();
@@ -466,36 +466,36 @@ void find_cd()
 
     titles_fp = fopen(title_file, "r");
     if (titles_fp) {
-	while (fgets(entry, MAX_ENTRY, titles_fp)) {
+        while (fgets(entry, MAX_ENTRY, titles_fp)) {
 
-	    /* Skip past catalog number */
-	    catalog = entry;
-	    if (found = strstr(catalog, ",")) {
-		*found = 0;
-		title = found + 1;
+            /* Skip past catalog number */
+            catalog = entry;
+            if (found = strstr(catalog, ",")) {
+            *found = '\0';
+            title = found + 1;
 
-		/* Zap the next comma in the entry to reduce it to title only */
-		if (found = strstr(title, ",")) {
-		    *found = '\0';
+            /* Zap the next comma in the entry to reduce it to title only */
+            if (found = strstr(title, ",")) {
+                *found = '\0';
 
-		    /* Now see if the match substring is present */
-		    if (found = strstr(title, match)) {
-			count++;
-			strcpy(current_cd, title);
-			strcpy(current_cat, catalog);
-		    }
-		}
-	    }
-	}
-	fclose(titles_fp);
+                /* Now see if the match substring is present */
+                if (found = strstr(title, match)) {
+                    count++;
+                    strcpy(current_cd, title);
+                    strcpy(current_cat, catalog);
+                }
+            }
+            }
+        }
+        fclose(titles_fp);
     }
     if (count != 1) {
-	if (count == 0)
-	    mvprintw(ERROR_LINE, 0, "Sorry, no matching CD found. ");
-	if (count > 1)
-	    mvprintw(ERROR_LINE, 0, "Sorry, match is ambiguous: %d CDs found. ", count);
-	current_cd[0] = '\0';
-	get_return();
+        if (count == 0)
+            mvprintw(ERROR_LINE, 0, "Sorry, no matching CD found. ");
+        if (count > 1)
+            mvprintw(ERROR_LINE, 0, "Sorry, match is ambiguous: %d CDs found. ", count);
+        current_cd[0] = '\0';
+        get_return();
     }
 }
 
@@ -521,9 +521,9 @@ void remove_tracks()
     
 
     while (fgets(entry, MAX_ENTRY, tracks_fp)) {
-	/* Compare catalog number and copy entry if no match */
-	if (strncmp(current_cat, entry, cat_length) != 0)
-	    fputs(entry, temp_fp);
+        /* Compare catalog number and copy entry if no match */
+        if (strncmp(current_cat, entry, cat_length) != 0)
+            fputs(entry, temp_fp);
     }
     fclose(tracks_fp);
     fclose(temp_fp);
@@ -556,9 +556,9 @@ void remove_cd()
     temp_fp = fopen(temp_file, "w");
 
     while (fgets(entry, MAX_ENTRY, titles_fp)) {
-	/* Compare catalog number and copy entry if no match */
-	if (strncmp(current_cat, entry, cat_length) != 0)
-	    fputs(entry, temp_fp);
+        /* Compare catalog number and copy entry if no match */
+        if (strncmp(current_cat, entry, cat_length) != 0)
+            fputs(entry, temp_fp);
     }
     fclose(titles_fp);
     fclose(temp_fp);
@@ -597,9 +597,9 @@ void list_tracks()
     int first_line = 0;
 
     if (current_cd[0] == '\0') {
-	mvprintw(ERROR_LINE, 0, "You must select a CD first. ", stdout);
-	get_return();
-	return;
+        mvprintw(ERROR_LINE, 0, "You must select a CD first. ", stdout);
+        get_return();
+        return;
     }
     clear_all_screen();
     cat_length = strlen(current_cat);
@@ -607,7 +607,7 @@ void list_tracks()
     /* First count the number of tracks for the current CD */
     tracks_fp = fopen(tracks_file, "r");
     if (!tracks_fp)
-	return;
+	    return;
     while (fgets(entry, MAX_ENTRY, tracks_fp)) {
 	if (strncmp(current_cat, entry, cat_length) == 0)
 	    tracks++;
@@ -631,17 +631,17 @@ void list_tracks()
 
     /* write the track information into the pad */
     while (fgets(entry, MAX_ENTRY, tracks_fp)) {
-	/* Compare catalog number and output rest of entry */
-	if (strncmp(current_cat, entry, cat_length) == 0) {
-	    mvwprintw(track_pad_ptr, lines_op++, 0, "%s", entry + cat_length + 1);
-	}
+        /* Compare catalog number and output rest of entry */
+        if (strncmp(current_cat, entry, cat_length) == 0) {
+            mvwprintw(track_pad_ptr, lines_op++, 0, "%s", entry + cat_length + 1);
+        }
     }
     fclose(tracks_fp);
 
     if (lines_op > BOXED_LINES) {
-	mvprintw(MESSAGE_LINE, 0, "Cursor keys to scroll, RETURN or q to exit");
+	    mvprintw(MESSAGE_LINE, 0, "Cursor keys to scroll, RETURN or q to exit");
     } else {
-	mvprintw(MESSAGE_LINE, 0, "RETURN or q to exit");
+	    mvprintw(MESSAGE_LINE, 0, "RETURN or q to exit");
     }
     wrefresh(stdscr);
     keypad(stdscr, TRUE);
@@ -650,20 +650,20 @@ void list_tracks()
 
     key = 0;
     while (key != 'q' && key != KEY_ENTER && key != '\n') {
-	if (key == KEY_UP) {
-	    if (first_line > 0)
-		first_line--;
-	}
-	if (key == KEY_DOWN) {
-	    if (first_line + BOXED_LINES + 1 < tracks)
-		first_line++;
-	}
-	/* now draw the appropriate part of the pad on the screen */
-	prefresh(track_pad_ptr, first_line, 0,
-		 BOX_LINE_POS, BOX_ROW_POS,
-		 BOX_LINE_POS + BOXED_LINES, BOX_ROW_POS + BOXED_ROWS);
-/*	wrefresh(stdscr); */
-	key = getch();
+        if (key == KEY_UP) {
+            if (first_line > 0)
+            first_line--;
+        }
+        if (key == KEY_DOWN) {
+            if (first_line + BOXED_LINES + 1 < tracks)
+            first_line++;
+        }
+        /* now draw the appropriate part of the pad on the screen */
+        prefresh(track_pad_ptr, first_line, 0,
+            BOX_LINE_POS, BOX_ROW_POS,
+            BOX_LINE_POS + BOXED_LINES, BOX_ROW_POS + BOXED_ROWS);
+        /*	wrefresh(stdscr); */
+        key = getch();
     }
 
     delwin(track_pad_ptr);
@@ -721,22 +721,22 @@ void update_cd()
 
     do {
 
-	mvwprintw(sub_window_ptr, screen_line++, BOX_ROW_POS + 2, "Track %d: ", track);
-	clrtoeol();
-	refresh();
-	wgetnstr(sub_window_ptr, track_name, MAX_STRING);
-	len = strlen(track_name);
-	if (len > 0 && track_name[len - 1] == '\n')
-	    track_name[len - 1] = '\0';
+        mvwprintw(sub_window_ptr, screen_line++, BOX_ROW_POS + 2, "Track %d: ", track);
+        clrtoeol();
+        refresh();
+        wgetnstr(sub_window_ptr, track_name, MAX_STRING);
+        len = strlen(track_name);
+        if (len > 0 && track_name[len - 1] == '\n')
+            track_name[len - 1] = '\0';
 
-	if (*track_name)
-	    fprintf(tracks_fp, "%s,%d,%s\n", current_cat, track, track_name);
-	track++;
-	if (screen_line > BOXED_LINES - 1) {
-	    /* time to start scrolling */
-	    scroll(sub_window_ptr);
-	    screen_line--;
-	}
+        if (*track_name)
+            fprintf(tracks_fp, "%s,%d,%s\n", current_cat, track, track_name);
+        track++;
+        if (screen_line > BOXED_LINES - 1) {
+            /* time to start scrolling */
+            scroll(sub_window_ptr);
+            screen_line--;
+        }
     } while (*track_name);
     delwin(sub_window_ptr);
 

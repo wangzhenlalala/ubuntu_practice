@@ -16,22 +16,73 @@ struct test_data {
 };
 
 void literate_dbm(GDBM_FILE );
+int store_dbm(GDBM_FILE); //funtion prototype declaration must be identical to its definition
+int count_dbm(GDBM_FILE);
+
 int main(){
     GDBM_FILE dbm_ptr; // this is NOT GDBM_FILE * dbm_ptr
-    struct test_data items_to_store[ITEMS_USED],temp_item;
-    datum key_datum;
-    datum data_datum;
-    char key_to_use[20];
-    int i, result;
-    gdbm_count_t count;
     // GDBM_FILE gdbm_open (const char * name , int block_size , intflags , int mode , void (*fatal func)(const char *))
-    dbm_ptr = gdbm_open(TEST_DB_FILE, 0, GDBM_WRCREAT, 0666, NULL);
+   //GDBM_WRITER | GDBM_NEWDB 
+    // dbm_ptr = gdbm_open(TEST_DB_FILE, 0, GDBM_WRCREAT, 0666, NULL);
+     dbm_ptr = gdbm_open(TEST_DB_FILE, 0, GDBM_READER, 0666, NULL);
+
     if(!dbm_ptr){
         printf("Failed to open database\n");
         exit(2);
     }
     printf("Opened database successfully\n");
+    
+    // store_dbm(dbm_ptr);
+    // count_dbm(dbm_ptr);
+    literate_dbm(dbm_ptr);
+    
+    gdbm_close(dbm_ptr); //returns null; but how can we handle close error? in the function fatal_vfunc passed to gdbm_open ???
+    printf("close the database !\n");
+    return 0; 
+}
 
+void literate_dbm(GDBM_FILE db_ptr){
+    //the db_ptr must be opened already!!!
+   datum key_datum;
+   datum data_datum;
+   datum next_key_datum;
+
+   int total_items = 0;
+   key_datum = gdbm_firstkey(db_ptr);
+   while(key_datum.dptr){
+    //    data_datum = gdbm_fetch(db_ptr,key_datum);
+    //     if(data_datum.dptr == NULL){
+    //         if(gdbm_errno == GDBM_ITEM_NOT_FOUND){
+    //             printf("fetch data failed: %s\n",gdbm_strerror(gdbm_errno));
+    //             exit(3);
+    //         }else{
+    //             printf("something unexpected happend %s\n",gdbm_strerror(gdbm_errno));
+    //             exit(4);
+    //         }
+    //     }
+    //     free(data_datum.dptr);
+        printf((char *)key_datum.dptr);
+        printf("\n");
+        free(key_datum.dptr);
+        next_key_datum = gdbm_nextkey(db_ptr,key_datum);
+        key_datum = next_key_datum;
+        total_items++;
+   }
+   if(gdbm_errno != GDBM_ITEM_NOT_FOUND){ 
+       fprintf(stderr,"failed on literating dababase!!!\n");
+       fprintf(stderr,"\n%s\n",gdbm_strerror(gdbm_errno));
+       exit(5);
+   }
+   printf("literate got %d items\n",total_items);
+}
+
+int store_dbm(GDBM_FILE dbm_ptr){
+    struct test_data items_to_store[ITEMS_USED];
+    datum key_datum;
+    datum data_datum;
+    char key_to_use[20];
+    int i, result;
+   
     memset(items_to_store,'\0',sizeof(items_to_store) );
     strcpy(items_to_store[0].misc_chars,"First");
     items_to_store[0].any_integer = 21;
@@ -64,7 +115,10 @@ int main(){
             return 1;
         }
     }
-    printf("store data completed!!\n");
+    return 0;
+}
+
+void fetch_dbm(GDBM_FILE db_ptr,char *key){
     //strcpy(key_to_use,"F21M");
     // strcpy(key_datum.dptr,"F21M");
     // key_datum.dsize = strlen(key_datum.dptr);
@@ -85,44 +139,12 @@ int main(){
     // printf("\t%s\n",temp_item.misc_chars);
     // free(data_datum.dptr); //the data returned from gdbm is stored in the memory allocted by malloc,so don't forget to release the memory!!!
 
-    literate_dbm(dbm_ptr);
+}
 
+int count_dbm(GDBM_FILE dbm_ptr){
+    gdbm_count_t count;
     gdbm_count(dbm_ptr,&count);
     printf("\ngdbm_count got %d items\n",(int)count);
-    gdbm_close(dbm_ptr); //returns null; but how can we handle close error? in the function fatal_vfunc passed to gdbm_open ???
-    printf("close the database !\n");
-    return 0; 
+    return count;
 }
 
-void literate_dbm(GDBM_FILE db_ptr){
-    //the db_ptr must be opened already!!!
-   datum key_datum;
-   datum data_datum;
-   datum next_key_datum;
-
-   int total_items = 0;
-   key_datum = gdbm_firstkey(db_ptr);
-   while(key_datum.dptr){
-    //    data_datum = gdbm_fetch(db_ptr,key_datum);
-    //     if(data_datum.dptr == NULL){
-    //         if(gdbm_errno == GDBM_ITEM_NOT_FOUND){
-    //             printf("fetch data failed: %s\n",gdbm_strerror(gdbm_errno));
-    //             exit(3);
-    //         }else{
-    //             printf("something unexpected happend %s\n",gdbm_strerror(gdbm_errno));
-    //             exit(4);
-    //         }
-    //     }
-    //     free(data_datum.dptr);
-        free(key_datum.dptr);
-        next_key_datum = gdbm_nextkey(db_ptr,key_datum);
-        key_datum = next_key_datum;
-        total_items++;
-   }
-   if(gdbm_errno != GDBM_ITEM_NOT_FOUND){ 
-       fprintf(stderr,"failed on literating dababase!!!\n");
-       fprintf(stderr,"\n%s\n",gdbm_strerror(gdbm_errno));
-       exit(5);
-   }
-   printf("literate got %d items\n",total_items);
-}

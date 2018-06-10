@@ -35,7 +35,7 @@ int main(){
     // store_dbm(dbm_ptr);
     // count_dbm(dbm_ptr);
     literate_dbm(dbm_ptr);
-    
+    count_dbm(dbm_ptr);
     gdbm_close(dbm_ptr); //returns null; but how can we handle close error? in the function fatal_vfunc passed to gdbm_open ???
     printf("close the database !\n");
     return 0; 
@@ -61,10 +61,10 @@ void literate_dbm(GDBM_FILE db_ptr){
     //         }
     //     }
     //     free(data_datum.dptr);
-        printf((char *)key_datum.dptr);
-        printf("\n");
-        free(key_datum.dptr);
+        
+        // free(key_datum.dptr); //can not free it before we pass it to gdbm_nextkey,!!!!! it will be null ,no way to get the key !!1
         next_key_datum = gdbm_nextkey(db_ptr,key_datum);
+        free(key_datum.dptr);
         key_datum = next_key_datum;
         total_items++;
    }

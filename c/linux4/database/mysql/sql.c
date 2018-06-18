@@ -229,13 +229,15 @@ field_type_pointer display_header(MYSQL_RES* res_ptr,int *len){
 		// }
 
 		// printf("\tWidth %ld\n", field_ptr->length);
-		// printf("\tMax-length %ld\n", field_ptr->max_length);
+		// printf("\tMax-length %ld\n", field_ptr->max_length); //If you use mysql_use_result(), the value of this variable is zero.
 		// if(field_ptr->flags & AUTO_INCREMENT_FLAG){
 		// 	printf("\tAuto increments\n");
 		// }
 		printf("%s  %lu\n", field_ptr->name, field_ptr->length);
 		temp_field.name = field_ptr->name;
 		temp_field.length = field_ptr->length;
+
+
 		fields_base[length] = temp_field;
 		length++;
 		// printf("\n");
